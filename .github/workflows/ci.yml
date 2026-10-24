@@ -25,7 +25,12 @@ jobs:
   deploy:
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        server: [app-server-1, app-server-2]
+    runs-on: [self-hosted, "${{ matrix.server }}"]
     steps:
       - name: Deploy to ${{ matrix.server }}
         run: |
