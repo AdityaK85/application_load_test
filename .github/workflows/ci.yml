@@ -8,26 +8,37 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 
+
+    env:
+      SECRET_KEY: ci-test-secret-key
+      DEBUG: "True"
+      DB_NAME: cctv_alerts
+      DB_USER: cctv_user
+      DB_PASSWORD: testpass
+      DB_HOST: localhost
+      DB_PORT: "5432"
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: pip
 
-      - name: Install dependencies and build
+      - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install coverage
-          python config/wsgi.py
+
+      - name: Build check
+        run: python config/wsgi.py
 
       - name: Publish artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: webapi
           path: .
