@@ -27,12 +27,14 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: self-hosted
     steps:
-      - name: Deploy
+      - name: Deploy to ${{ matrix.server }}
         run: |
           set -e
-          cd /var/www/cctv_alerts
+          cd /home/appsadmin/application
           git pull origin main
           source venv/bin/activate
           pip install -r requirements.txt
           python manage.py migrate --noinput
           sudo systemctl restart cctv-alerts
+          sleep 3
+          systemctl is-active --quiet cctv-alerts
