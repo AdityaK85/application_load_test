@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+      - main # Specify the branch to trigger the build
+
+pool:
+  vmImage: "ubuntu-latest" # Choose the appropriate build agent image
+
+jobs:
+  - job: BuildAndTest
+    displayName: "Build and Test"
+    steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: "3.10" # Specify the desired Python version
+
+      - script: |
+          # Install Python dependencies
+          pip install -r requirements.txt
+          # Install coverage tool
+          pip install coverage
+          # Build the code
+          python config/wsgi.py
+        displayName: "Install dependencies and Build"
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: "$(Pipeline.Workspace)" # Specify the path of the files or directories to publish as artifacts
+          artifactName: "webapi"
