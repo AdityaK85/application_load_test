@@ -27,7 +27,7 @@ class AlertListCreateView(generics.ListCreateAPIView):
         if camera_no:
             qs = qs.filter(camera_no=camera_no)
         if alert_name:
-            qs = [a for a in qs if alert_name.lower() in a.alert_names]
+            qs = qs.filter(alert_names__contains=[alert_name.lower()])
         return qs
 
     def create(self, request, *args, **kwargs):

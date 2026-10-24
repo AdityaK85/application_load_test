@@ -41,7 +41,7 @@ if __name__ == "__main__":
     tokens = login()
     access, refresh_token = tokens["access"], tokens["refresh"]
     while True:
-        r = send_alert(access, "sample.jpg", ["person", "vehicle"], "CAM-1")
+        r = send_alert(access, r"C:\Users\HP\Downloads\detection_561.jpg", ["person", "vehicle"], "CAM-1")
         if r.status_code == 401:                 # access token expired (1 hour)
             access = refresh(refresh_token)
             continue
