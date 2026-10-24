@@ -1,4 +1,4 @@
-name: CI
+name: CI-CD
 
 on:
   push:
@@ -7,38 +7,32 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-24.04 
-
-    env:
-      SECRET_KEY: ci-test-secret-key
-      DEBUG: "True"
-      DB_NAME: cctv_alerts
-      DB_USER: cctv_user
-      DB_PASSWORD: testpass
-      DB_HOST: localhost
-      DB_PORT: "5432"
-
+  build:
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
 
-      - name: Install dependencies
+      - name: Install dependencies and build check
         run: |
           pip install -r requirements.txt
-          pip install coverage
+          python config/wsgi.py
 
-      - name: Build check
-        run: python config/wsgi.py
-
-      - name: Publish artifact
-        uses: actions/upload-artifact@v5
-        with:
-          name: webapi
-          path: .
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: self-hosted
+    steps:
+      - name: Deploy
+        run: |
+          set -e
+          cd /var/www/cctv_alerts
+          git pull origin main
+          source venv/bin/activate
+          pip install -r requirements.txt
+          python manage.py migrate --noinput
+          sudo systemctl restart cctv-alerts
