@@ -29,12 +29,8 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        include:
-          - server: app-server-1
-            service: gunicorn
-          - server: app-server-2
-            service: gunicorn
-    runs-on: [self-hosted, "${{ matrix.server }}"]
+        server: [app-server-1, app-server-2]
+    runs-on: self-hosted
     steps:
       - name: Deploy to ${{ matrix.server }}
         run: |
@@ -44,6 +40,6 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
           python manage.py migrate --noinput
-          sudo systemctl restart ${{ matrix.service }}
+          sudo systemctl restart gunicorn
           sleep 3
-          systemctl is-active --quiet ${{ matrix.service }}
+          systemctl is-active --quiet gunicorn
