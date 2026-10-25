@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from urllib.parse import quote
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -171,3 +172,41 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 # ---------------- ASGI ----------------
 ASGI_APPLICATION = 'config.asgi.application'
+
+REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
+REDIS_PORT = os.getenv("REDIS_PORT", "6379")
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
+REDIS_CACHE_DB = os.getenv("REDIS_CACHE_DB", "1")
+
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT", "6379")
+REDIS_PASSWORD = quote(os.getenv("REDIS_PASSWORD", ""), safe="")
+
+def redis_url(db):
+    return (
+        f"redis://:{REDIS_PASSWORD}@"
+        f"{REDIS_HOST}:{REDIS_PORT}/{db}"
+    )
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": redis_url(os.getenv("REDIS_CACHE_DB", "1")),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "TIMEOUT": 300,
+    },
+
+    "sessions": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": redis_url(os.getenv("REDIS_SESSION_DB", "2")),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "TIMEOUT": 86400,
+    },
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "sessions"
