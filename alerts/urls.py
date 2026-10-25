@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from .views import AlertListCreateView, RegisterView
+from .views import *
 
 urlpatterns = [
     # Auth
@@ -10,5 +10,8 @@ urlpatterns = [
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # Alerts
-    path('alerts/', AlertListCreateView.as_view(), name='alerts'),
+    path("alerts/", alert_create),                          # POST
+    path("alerts/<str:ref>/", alert_get),                   # GET
+    path("alerts/<str:ref>/update/", alert_update),         # PATCH
+    path("alerts/<str:ref>/delete/", alert_delete),
 ]

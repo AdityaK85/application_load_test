@@ -210,3 +210,6 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "sessions"
+
+ALERT_QUEUE_URL = redis_url(os.getenv("REDIS_QUEUE_DB", "0"))
+ALERT_QUEUE = "alerts_queue"

@@ -1,5 +1,5 @@
 from django.db import models
-
+import uuid
 
 class Alert(models.Model):
     image = models.ImageField(upload_to='alerts/%Y/%m/%d/')
@@ -7,6 +7,7 @@ class Alert(models.Model):
     camera_no = models.CharField(max_length=50, db_index=True)
     alert_time = models.DateTimeField(db_index=True)  # time the alert happened on camera
     created_date = models.DateTimeField(auto_now_add=True)  # time saved in DB
+    ref = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
 
     class Meta:
         ordering = ['-created_date']
