@@ -19,6 +19,8 @@ class AlertListCreateView(generics.ListCreateAPIView):
     """
     serializer_class = AlertSerializer
     parser_classes = [MultiPartParser, FormParser, JSONParser]
+    authentication_classes = []                     # no auth (no JWT/session/token checks)
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         qs = Alert.objects.all()
