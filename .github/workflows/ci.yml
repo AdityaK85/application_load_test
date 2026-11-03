@@ -7,6 +7,23 @@ on:
     branches: [main]
 
 jobs:
+
+  core-bussines-api-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Test core alert API
+        run: python manage.py test alerts.tests --settings=config.ci_settings
+
   build:
     runs-on: ubuntu-24.04
     steps:
@@ -39,7 +56,6 @@ jobs:
           git pull origin main
           source venv/bin/activate
           pip install -r requirements.txt
-          # python manage.py migrate --noinput
           sudo systemctl restart gunicorn
           sleep 3
           systemctl is-active --quiet gunicorn
