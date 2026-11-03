@@ -50,7 +50,7 @@ class AlertCreateNoDBTest(SimpleTestCase):
 
     def test_invalid_image_returns_400(self):
         fake = SimpleUploadedFile("f.png", b"not an image", content_type="image/png")
-        self.assertEqual(self.post(image=fake).status_code, 400)
+        self.assertEqual(self.post(image=fake).status_code 400)
 
     def test_missing_camera_no_returns_400(self):
         self.assertIn("camera_no", self.post(camera_no=None).data)
