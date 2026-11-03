@@ -22,7 +22,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Test core alert API
-        run: python manage.py test alerts.tests --settings=config.ci_settings
+        run: python manage.py test alerts.tests --settings=config.settings
 
   build:
     runs-on: ubuntu-24.04
